@@ -81,8 +81,6 @@ def generate(include: list[str], exclude: str, length: int):
     for i in include:
         allowed_chars += charset[i]
 
-    print(allowed_chars)
-
     unshuffled_lst = (
             [secrets.choice(charset[x]) for x in include]
             +

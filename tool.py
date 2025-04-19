@@ -1,4 +1,3 @@
-import sys
 import argparse
 from generate import generate
 
@@ -13,17 +12,29 @@ length_help = "Length of password to generate. Must be between 8 and 20, includi
 ################################
 
 
-########## CLASS METHOD OVERRIDE #########
+#### CLASS METHOD OVERRIDE #####
 
 class MyAction(argparse.Action):
 
     def __init__(self, option_strings, dest, **kwargs):
+
+        """
+        Changes 'default' parameter value to include the list ['lowr'] by default.
+        Setting 'default' in arg definition to ['lowr'], will achieve same results.
+        """
+
         if 'default' not in kwargs:
             kwargs['default'] = ['lowr']
         super().__init__(option_strings, dest, **kwargs)
 
 
     def __call__(self, parser, namespace, values, option_string=None):
+
+        """
+        Adds 'lowr' to args.include list everytime the option is used.
+        'lowr' is not one of the choices, but is required in the list due to nature of the generate() function.
+        """
+
         initial_list = ['lowr']
         if values:
             final_list = initial_list + [x for x in values]
@@ -36,7 +47,18 @@ class MyAction(argparse.Action):
 
 ####### HELPER FUNCTIONS #######
 
-def checkExcluded(string):
+def checkExcluded(string: str) -> str:
+
+    """
+    Checks if 'exclude' string passed by user contains only characters from allowed symbols, ignores ones which are not.
+
+    Args:
+        string: String of symbols to be excluded from generated password.
+
+    Returns:
+        String of allowed symbols to be excluded from passsword, as requested by user.
+    """
+
     if not string:
         return string
     string = ''.join(set(string))
@@ -51,6 +73,21 @@ def checkExcluded(string):
 
 
 def checkLenRange(string):
+
+    """
+    Checks if user requested password length is allowed, i.e, in the range 8 to 20.
+
+    Args:
+        string: An integer in string format.
+
+    Returns:
+        Length of password to be generated, in integer form.
+
+    Raises:
+        ArgumentTypeError if passed string is not in range 8-20.
+        ArgumentTypeError if passed string is not convertible to integer.
+    """
+
     try:
         int_num = int(string)
         if int_num not in range(8,21):
@@ -97,8 +134,5 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-print(args.include)
-print(args.exclude)
-print(type(args.length))
-
-generate(args.include, args.exclude, args.length)
+password = generate(args.include, args.exclude, args.length)
+print(password)
